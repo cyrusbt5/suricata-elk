@@ -40,7 +40,7 @@ docker compose up -d vault-agent
 docker run -t -d --name vault-admin --network suricata-elk_vault-net -e VAULT_ADDR='http://vault:8200' hashicorp/vault:1.19.5 cat
 
 # Ensure vault-admin is removed on exit or interruption (Ctrl-C)
-trap ' echo "[+] Cleaning up..." ; docker rm -f vault-admin 2>/dev/null || true' EXIT
+trap ' echo "[+] Cleaning up..." ; docker rm -f vault-admin 2>/dev/null || true' EXIT INT TERM
 
 sleep 10
 
