@@ -74,15 +74,12 @@ docker exec vault-admin vault write -f -field=secret_id auth/approle/role/elk-ro
 
 docker compose up -d vault-agent
 
-sleep 5
-
 while [ ! -f ./secrets/filebeat.yml ]; do
   echo "[+] Waiting for Vault Agent to render template..."
   sleep 2
 done
 
 echo "[+] filebeat.yml rendered"
-
 
 echo "[+] Starting Docker environment..."
 
