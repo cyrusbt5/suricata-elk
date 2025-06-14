@@ -17,7 +17,6 @@ services:
   vault-agent:
     image: hashicorp/vault:1.19.5
     container_name: vault-agent
-    # user: "${VAULT_UID}:${VAULT_GID}"
     entrypoint: ["/bin/sh", "-c"]
     command: >
       "chown -R ${VAULT_UID}:${VAULT_GID} /vault /secrets /vault-creds &&
