@@ -87,6 +87,23 @@ WARN[0000] The "ELASTIC_PASSWORD" variable is not set. Defaulting to a blank str
  ✔ Volume elk_esdata        Removed
 ```
 
+### Deep Cleanup
+
+To remove all untracked files, directories, and generated secrets, run:
+
+```sh
+git clean -xfd
+```
+
+Example output:
+
+```
+Removing .env
+Removing passwords.txt
+Removing secrets/
+Removing vault-creds/
+```
+
 > **Note:**  
 > - The following services (kibana|filebeat) may take approximately 2 minutes to become healthy after startup.  
 > - You can monitor their health status using `docker ps` and `watch` commands.  
