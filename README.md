@@ -88,6 +88,6 @@ WARN[0000] The "ELASTIC_PASSWORD" variable is not set. Defaulting to a blank str
 ```
 
 > **Note:**  
-> - The following services may take approximately 2 minutes to become healthy after startup.  
+> - The following services (kibana|filebeat) may take approximately 2 minutes to become healthy after startup.  
 > - You can monitor their health status using `docker ps` and `watch` commands.  
 > - Example: `watch docker ps` will refresh the container status every 2 seconds, allowing you to observe when the containers transition to a healthy state.
