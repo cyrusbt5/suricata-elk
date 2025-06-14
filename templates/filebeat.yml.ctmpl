@@ -1,0 +1,20 @@
+filebeat.modules:
+  - module: suricata
+    eve:
+      enabled: true
+      var.paths:
+        - /var/log/suricata/eve.json
+
+setup.kibana:
+  host: "http://kibana:5601"
+  username: "elastic"
+  password: {{ with secret "secret/elk/elastic" }}{{ .Data.data.password }}{{ end }}
+
+setup.dashboards.enabled: true
+setup.ilm.overwrite: true
+setup.template.overwrite: true
+
+output.elasticsearch:
+  hosts: ["http://elasticsearch:9200"]
+  username: "elastic"
+  password: {{ with secret "secret/elk/elastic" }}{{ .Data.data.password }}{{ end }}
