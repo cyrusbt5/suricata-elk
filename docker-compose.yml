@@ -20,7 +20,7 @@ services:
     # user: "${VAULT_UID}:${VAULT_GID}"
     entrypoint: ["/bin/sh", "-c"]
     command: >
-      "chown -R ${VAULT_UID}:${VAULT_GID} /vault /secrets &&
+      "chown -R ${VAULT_UID}:${VAULT_GID} /vault /secrets /vault-creds &&
       vault agent -config=/etc/vault/config.hcl"
     volumes:
       - ./vault-agent/config.hcl:/etc/vault/config.hcl:rw
