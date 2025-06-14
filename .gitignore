@@ -1,0 +1,14 @@
+# Ignore environment and secrets
+.env
+secrets/
+vault-creds/
+passwords.txt
+
+# Vault agent templates/output
+*.ctmpl
+*.hcl~
+*.log
+
+# OS/system artifacts
+.DS_Store
+*.swp
