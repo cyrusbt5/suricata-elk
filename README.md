@@ -41,7 +41,7 @@ graph TD
     grafana --> |Data Source| elasticsearch
 
     %% Suricata logs (volume)
-    suricata_logs[//var/log/suricata:ro]
+    suricata_logs[ /var/log/suricata:ro ]
     suricata_logs --> suricata
     suricata_logs --> filebeat
 
