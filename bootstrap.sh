@@ -86,3 +86,6 @@ echo "[+] Starting Docker environment..."
 docker compose --env-file ./secrets/.env up -d
 
 echo "[✓] Environment bootstrapped."
+echo "[+] To access Kibana, visit http://localhost:5601 (user: elastic, password: see: secrets/.env)"
+echo "[+] To access Elasticsearch, visit http://localhost:9200 (user: elastic, password: see: secrets/.env)"
+echo "[+] To access Grafana, visit http://localhost:3000 (default user: admin, password: admin)"
