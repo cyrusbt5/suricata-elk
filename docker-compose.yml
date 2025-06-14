@@ -1,0 +1,115 @@
+---
+
+services:
+  vault:
+    image: hashicorp/vault:1.19.5
+    container_name: vault
+    ports:
+      - "8200:8200"
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: root
+      VAULT_DEV_LISTEN_ADDRESS: "0.0.0.0:8200"
+    cap_add:
+      - IPC_LOCK
+    networks:
+      - vault-net
+
+  vault-agent:
+    image: hashicorp/vault:1.19.5
+    container_name: vault-agent
+    # user: "${VAULT_UID}:${VAULT_GID}"
+    entrypoint: ["/bin/sh", "-c"]
+    command: >
+      "chown -R ${VAULT_UID}:${VAULT_GID} /vault /secrets &&
+      vault agent -config=/etc/vault/config.hcl"
+    volumes:
+      - ./vault-agent/config.hcl:/etc/vault/config.hcl:rw
+      - ./templates/.env.ctmpl:/etc/vault/templates/.env.ctmpl:ro
+      - ./templates/filebeat.yml.ctmpl:/etc/vault/templates/filebeat.yml.ctmpl:ro
+      - ./vault-creds:/vault-creds:rw
+      - ./secrets:/secrets
+    networks:
+      - elk-net
+      - vault-net
+    depends_on:
+      - vault
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:9.0.2
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=true
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+    networks:
+      - elk-net
+    restart: unless-stopped
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:9.0.2
+    container_name: kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=kibana_system
+      - ELASTICSEARCH_PASSWORD=${KIBANA_SYSTEM_PASSWORD}
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+    networks:
+      - elk-net
+    healthcheck:
+      test: curl -s -f http://localhost:5601/api/status | grep -q '"level":"available"'
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:9.0.2
+    container_name: filebeat
+    user: root
+    command: ["--strict.perms=false", "-e"]
+    environment:
+      - ELASTICSEARCH_USERNAME=beats_system
+      - ELASTICSEARCH_PASSWORD=${FILEBEAT_INTERNAL_PASSWORD}
+    volumes:
+      - ./secrets/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - /var/log/suricata:/var/log/suricata:ro
+    depends_on:
+      - elasticsearch
+      - kibana
+    networks:
+      - elk-net
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://kibana:5601 > /dev/null"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:12.0.1
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - elasticsearch
+    networks:
+      - elk-net
+
+volumes:
+  esdata:
+  grafana_data:
+
+networks:
+  elk-net:
+    driver: bridge
+  vault-net:
+    driver: bridge
