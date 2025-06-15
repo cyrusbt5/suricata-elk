@@ -50,6 +50,12 @@ graph TD
     filebeat -->|healthcheck: kibana:5601| kibana
 ```
 
+## Example Stack Deployment
+
+Below is a demonstration of the stack deployment process, generated with [agg](https://github.com/asciinema/agg):
+
+![Stack deployment demo](demo/bootstrap-demo.gif)
+
 ## Bootstrap and Cleanup
 
 ### Running the Bootstrap
